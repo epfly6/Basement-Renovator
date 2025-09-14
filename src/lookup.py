@@ -215,7 +215,7 @@ class StageLookup(Lookup):
                 hasBasePath = lambda s: s.get("BaseGamePath") == baseGamePath
             stages = list(filter(hasBasePath, stages))
 
-        return stages
+        return stages[::-1]
 
     def getGfx(self, node):
         gfx = node.find("Gfx")
@@ -1468,13 +1468,19 @@ class MainLookup:
         if prefix:
             paths = {
                 "OuterBG": prefix + ".png",
-                "BigOuterBG": prefix + "_big.png"
-                if node.get("HasBigBG") == "1"
-                else "",
+                "BigOuterBG": (
+                    prefix + "_big.png" if node.get("HasBigBG") == "1" else ""
+                ),
                 "InnerBG": prefix + "Inner.png",
                 "NFloor": prefix + "_nfloor.png",
                 "LFloor": prefix + "_lfloor.png",
             }
+
+            if node.get("HasFloorAnim") == "1":
+                paths["FloorAnim"] = prefix + "_FloorBackdrop.anm2"
+
+            if node.get("HasWallAnim") == "1":
+                paths["WallAnim"] = prefix + "_WallBackdrop.anm2"
 
         if paths is None:
             raise ValueError("Invalid gfx node!", node.tag, node.attrib)
